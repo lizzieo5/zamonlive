@@ -15,6 +15,7 @@ Route::get('/subscribe', [SubscribeController::class, 'index'])->name('subscribe
 Route::get('lang/{lang}', [LanguageController::class, 'switch'])->name('lang.switch');
 Route::get('/search', [SearchController::class, 'index'])->name('search');
 Route::post('/newsletter/subscribe', [NewsletterController::class, 'subscribe'])->name('newsletter.subscribe');
+Route::post('/newspaper/subscribe', [NewsletterController::class, 'subscribe'])->name('newspaper.subscribe');
 
 Route::get('/news/{slug}', [NewsController::class, 'show'])->name('news.show');
 Route::get('/category/{slug}', [CategoryController::class, 'index'])->name('category');
