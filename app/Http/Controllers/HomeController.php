@@ -52,7 +52,8 @@ class HomeController extends Controller
             })
             ->values();
 
-        $latestNewspaper = Newspaper::latest()->first();
+        $latestNewspapers = Newspaper::latest()->take(5)->get();
+        $latestNewspaper = $latestNewspapers->first();
 
         return view('home', compact(
             'navCategories',
@@ -61,6 +62,7 @@ class HomeController extends Controller
             'featuredCategory',
             'featuredCategoryNews',
             'allCategoryNews',
+            'latestNewspapers',
             'latestNewspaper'
         ));
     }

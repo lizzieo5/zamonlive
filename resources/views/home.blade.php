@@ -286,24 +286,22 @@
                             </div>
                             @if(isset($latestNewspaper))
                             <div class="newspaper-body">
-                                <div class="newspaper-img-wrap">
-                                    <img src="{{ $latestNewspaper->cover_image ? asset('storage/'.$latestNewspaper->cover_image) : asset('images/newspaper-placeholder.jpg') }}"
-                                         alt="{{ $latestNewspaper->title }}" loading="lazy">
+                                <div class="newspaper-img-wrap placeholder-img">
                                     <div class="newspaper-date-badge">
-                                        {{ $latestNewspaper->published_at ? $latestNewspaper->published_at->format('d.m.Y') : date('d.m.Y') }}
+                                        {{ $latestNewspaper->created_at ? $latestNewspaper->created_at->format('d.m.Y') : date('d.m.Y') }}
                                     </div>
                                 </div>
                                 <div class="newspaper-info">
                                     <h4>{{ $latestNewspaper->title ?? 'ZamonLive Gazetasi' }}</h4>
-                                    <p>{{ $latestNewspaper->issue_number ?? '№ 001' }}</p>
+                                    <p>PDF nashr</p>
                                 </div>
                                 <div class="newspaper-actions">
                                     <a href="{{ route('subscribe') }}" class="newspaper-btn newspaper-btn--subscribe">
                                         <i class="fas fa-bell"></i>
                                         Obuna bo'lish
                                     </a>
-                                    @if($latestNewspaper->pdf_path)
-                                    <a href="{{ asset('storage/'.$latestNewspaper->pdf_path) }}"
+                                    @if($latestNewspaper->file)
+                                    <a href="{{ asset('storage/'.$latestNewspaper->file) }}"
                                        download class="newspaper-btn newspaper-btn--pdf">
                                         <i class="fas fa-file-pdf"></i>
                                         PDF yuklab olish
@@ -315,6 +313,25 @@
                                     </button>
                                     @endif
                                 </div>
+                                @if(isset($latestNewspapers) && $latestNewspapers->count() > 1)
+                                <div class="newspaper-archive">
+                                    <div class="newspaper-archive__header">
+                                        <span>So'nggi PDF'lar</span>
+                                    </div>
+                                    <div class="newspaper-archive__list">
+                                        @foreach($latestNewspapers->skip(1) as $newspaper)
+                                        <a href="{{ $newspaper->file ? asset('storage/'.$newspaper->file) : '#' }}"
+                                           class="newspaper-archive__item"
+                                           @if($newspaper->file) download @endif>
+                                            <span class="newspaper-archive__title">{{ $newspaper->title }}</span>
+                                            <span class="newspaper-archive__date">
+                                                {{ $newspaper->created_at ? $newspaper->created_at->format('d.m.Y') : date('d.m.Y') }}
+                                            </span>
+                                        </a>
+                                        @endforeach
+                                    </div>
+                                </div>
+                                @endif
                             </div>
                             @else
                             <div class="newspaper-body">
@@ -323,7 +340,7 @@
                                 </div>
                                 <div class="newspaper-info">
                                     <h4>ZamonLive Gazetasi</h4>
-                                    <p>Bugungi son</p>
+                                    <p>PDF nashr</p>
                                 </div>
                                 <div class="newspaper-actions">
                                     <a href="{{ route('subscribe') }}" class="newspaper-btn newspaper-btn--subscribe">
@@ -335,6 +352,25 @@
                                         PDF yuklab olish
                                     </button>
                                 </div>
+                                @if(isset($latestNewspapers) && $latestNewspapers->count() > 1)
+                                <div class="newspaper-archive">
+                                    <div class="newspaper-archive__header">
+                                        <span>So'nggi PDF'lar</span>
+                                    </div>
+                                    <div class="newspaper-archive__list">
+                                        @foreach($latestNewspapers->skip(1) as $newspaper)
+                                        <a href="{{ $newspaper->file ? asset('storage/'.$newspaper->file) : '#' }}"
+                                           class="newspaper-archive__item"
+                                           @if($newspaper->file) download @endif>
+                                            <span class="newspaper-archive__title">{{ $newspaper->title }}</span>
+                                            <span class="newspaper-archive__date">
+                                                {{ $newspaper->created_at ? $newspaper->created_at->format('d.m.Y') : date('d.m.Y') }}
+                                            </span>
+                                        </a>
+                                        @endforeach
+                                    </div>
+                                </div>
+                                @endif
                             </div>
                             @endif
                         </div>

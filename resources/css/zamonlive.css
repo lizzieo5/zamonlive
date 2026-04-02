@@ -1033,6 +1033,56 @@ ul { list-style: none; }
     cursor: not-allowed;
 }
 
+.newspaper-archive {
+    border-top: 1px solid var(--gray-200);
+    margin-top: 6px;
+    padding: 10px 14px 14px;
+}
+
+.newspaper-archive__header {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--gray-600);
+    margin-bottom: 8px;
+}
+
+.newspaper-archive__list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.newspaper-archive__item {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    padding: 8px 10px;
+    border-radius: var(--radius-sm);
+    background: var(--off-white);
+    border: 1px solid var(--gray-100);
+    transition: var(--transition);
+}
+
+.newspaper-archive__item:hover {
+    background: var(--green-light);
+    border-color: var(--green-light2);
+    transform: translateY(-1px);
+}
+
+.newspaper-archive__title {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    line-height: 1.35;
+}
+
+.newspaper-archive__date {
+    font-size: 0.68rem;
+    color: var(--gray-600);
+}
+
 /* ============================================================
    ALL CATEGORIES SECTION
    ============================================================ */
