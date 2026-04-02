@@ -260,7 +260,7 @@
                                 </div>
                             </article>
                             @empty
-                            @for($p = 0; $p < 6; $p++)
+                            @for($p = 0; $p < 8; $p++)
                             <article class="cat-news-card cat-news-card--placeholder">
                                 <div class="cat-news-card__img placeholder-img"></div>
                                 <div class="cat-news-card__body">
@@ -342,7 +342,7 @@
                 </div>
 
                 {{-- ============================================================
-                     SECTION 3: ALL CATEGORIES NEWS — 6 news each, 4-col grid
+                     SECTION 3: ALL CATEGORIES NEWS — 8 news each, 4-col grid
                      ============================================================ --}}
                 <div class="all-categories-section">
 
@@ -399,7 +399,7 @@
                             <a href="#" class="cat-section__more">Ko'proq <i class="fas fa-arrow-right"></i></a>
                         </div>
                         <div class="cat-section__grid">
-                            @for($k = 0; $k < 6; $k++)
+                            @for($k = 0; $k < 8; $k++)
                             <article class="grid-news-card">
                                 <div class="grid-news-card__img placeholder-img"></div>
                                 <div class="grid-news-card__body">
