@@ -25,6 +25,8 @@ class NewsForm
                     ->columnSpanFull(),
                 FileUpload::make('thumbnail')
                     ->image()
+                    ->disk('public')
+                    ->visibility('public')
                     ->directory('news')
                     ->imageEditor(),
                 Select::make('category_id')

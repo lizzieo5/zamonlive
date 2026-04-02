@@ -17,7 +17,7 @@ class NewsTable
             ->columns([
                 TextColumn::make('title')
                     ->searchable(),
-                ImageColumn::make('image'),
+                ImageColumn::make('thumbnail'),
                 TextColumn::make('category_id')
                     ->numeric()
                     ->sortable(),
