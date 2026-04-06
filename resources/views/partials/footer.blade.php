@@ -98,7 +98,7 @@
                     <span>|</span>
                     <a href="#">Reklama</a>
                     <span>|</span>
-                    <a href="#">Biz haqimizda</a>
+                    <a href="{{ route('about') }}">Biz haqimizda</a>
                 </div>
             </div>
 

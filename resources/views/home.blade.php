@@ -13,6 +13,7 @@
 
             {{-- MAIN 4 COLUMNS AREA --}}
             <div class="col-main">
+                <div class="home-feed">
 
                 {{-- ============================================================
                      SECTION 1: LATEST NEWS (3 cols) + WEATHER/CURRENCY (1 col)
@@ -91,9 +92,153 @@
                         </div>
                     </div>
 
+                </div>
+
+                {{-- ============================================================
+                     SECTION 2: CATEGORY NEWS (3 cols) + NEWSPAPER (1 col)
+                     ============================================================ --}}
+                <div class="mid-section">
+
+                    {{-- Category News: 3 cols --}}
+                    <div class="category-news-block">
+                        <div class="section-header">
+                            @if(isset($featuredCategory))
+                            <span class="section-badge" style="background: {{ $featuredCategory->color ?? 'var(--green-mid)' }}">
+                                <i class="fas fa-layer-group"></i> {{ $featuredCategory->name }}
+                            </span>
+                            @else
+                            <span class="section-badge">
+                                <i class="fas fa-layer-group"></i> Tanlangan Yangiliklar
+                            </span>
+                            @endif
+                        </div>
+
+                        <div class="category-news-grid">
+                            @forelse($featuredCategoryNews ?? [] as $cn)
+                            <article class="cat-news-card">
+                                <a href="{{ route('news.show', $cn->slug) }}" class="cat-news-card__img">
+                                    <img src="{{ $cn->thumbnail ? asset('storage/'.$cn->thumbnail) : asset('images/placeholder.jpg') }}"
+                                         alt="{{ $cn->title }}" loading="lazy">
+                                </a>
+                                <div class="cat-news-card__body">
+                                    <span class="cat-badge">
+                                        {{ $cn->category->name ?? 'Kategoriya' }}
+                                    </span>
+                                    <div class="cat-news-card__meta">
+                                        <span><i class="fas fa-calendar"></i> {{ $cn->created_at->format('d.m.Y') }}</span>
+                                        <span><i class="fas fa-clock"></i> {{ $cn->created_at->format('H:i') }}</span>
+                                    </div>
+                                    <h3 class="cat-news-card__title">
+                                        <a href="{{ route('news.show', $cn->slug) }}">{{ $cn->title }}</a>
+                                    </h3>
+                                    <p class="cat-news-card__excerpt">
+                                        {{ Str::limit(strip_tags($cn->body), 90) }}
+                                    </p>
+                                </div>
+                            </article>
+                            @empty
+                            @for($p = 0; $p < 8; $p++)
+                            <article class="cat-news-card cat-news-card--placeholder">
+                                <div class="cat-news-card__img placeholder-img"></div>
+                                <div class="cat-news-card__body">
+                                    <span class="cat-badge">Kategoriya</span>
+                                    <div class="cat-news-card__meta">
+                                        <span><i class="fas fa-calendar"></i> 01.01.2025</span>
+                                    </div>
+                                    <h3 class="cat-news-card__title">Yangilik sarlavhasi</h3>
+                                    <p class="cat-news-card__excerpt">Yangilik qisqacha mazmuni bu yerda ko'rinadi...</p>
+                                </div>
+                            </article>
+                            @endfor
+                            @endforelse
+                        </div>
+                    </div>
+
+                </div>
+
+                {{-- ============================================================
+                     SECTION 3: ALL CATEGORIES NEWS — 8 news each, 4-col grid
+                     ============================================================ --}}
+                <div class="all-categories-section">
+
+                    @php
+                        $cats = $allCategoryNews ?? [];
+                    @endphp
+
+                    @forelse($cats as $catData)
+                    <section class="cat-section">
+                        <div class="cat-section__header">
+                            <h2 class="cat-section__title">
+                                <a href="{{ route('category', $catData['category']->slug ?? '#') }}">
+                                    {{ $catData['category']->name ?? 'Kategoriya' }}
+                                </a>
+                            </h2>
+                            <a href="{{ route('category', $catData['category']->slug ?? '#') }}" class="cat-section__more">
+                                Ko'proq <i class="fas fa-arrow-right"></i>
+                            </a>
+                        </div>
+
+                        <div class="cat-section__grid">
+                            @foreach($catData['news'] ?? [] as $n)
+                            <article class="grid-news-card">
+                                <a href="{{ route('news.show', $n->slug) }}" class="grid-news-card__img">
+                                    <img src="{{ $n->thumbnail ? asset('storage/'.$n->thumbnail) : asset('images/placeholder.jpg') }}"
+                                         alt="{{ $n->title }}" loading="lazy">
+                                    <span class="grid-news-card__cat-badge">{{ $n->category->name ?? '' }}</span>
+                                </a>
+                                <div class="grid-news-card__body">
+                                    <div class="grid-news-card__meta">
+                                        <span><i class="fas fa-calendar-alt"></i> {{ $n->created_at->format('d.m.Y') }}</span>
+                                        <span><i class="fas fa-clock"></i> {{ $n->created_at->format('H:i') }}</span>
+                                    </div>
+                                    <h3 class="grid-news-card__title">
+                                        <a href="{{ route('news.show', $n->slug) }}">{{ $n->title }}</a>
+                                    </h3>
+                                    <p class="grid-news-card__excerpt">
+                                        {{ Str::limit(strip_tags($n->body), 80) }}
+                                    </p>
+                                </div>
+                            </article>
+                            @endforeach
+                        </div>
+                    </section>
+                    @empty
+
+                    {{-- Static placeholder sections --}}
+                    @foreach(['Dunyo', 'Sport', 'Jamiyat', 'Madaniyat', 'Jinoyat', 'Salomatlik', 'Hi-Tech', 'Bu Qiziq'] as $staticCat)
+                    <section class="cat-section">
+                        <div class="cat-section__header">
+                            <h2 class="cat-section__title">
+                                <a href="#">{{ $staticCat }}</a>
+                            </h2>
+                            <a href="#" class="cat-section__more">Ko'proq <i class="fas fa-arrow-right"></i></a>
+                        </div>
+                        <div class="cat-section__grid">
+                            @for($k = 0; $k < 8; $k++)
+                            <article class="grid-news-card">
+                                <div class="grid-news-card__img placeholder-img"></div>
+                                <div class="grid-news-card__body">
+                                    <div class="grid-news-card__meta">
+                                        <span><i class="fas fa-calendar-alt"></i> 01.01.2025</span>
+                                        <span><i class="fas fa-clock"></i> 12:00</span>
+                                    </div>
+                                    <h3 class="grid-news-card__title"><a href="#">Yangilik sarlavhasi</a></h3>
+                                    <p class="grid-news-card__excerpt">Yangilik qisqacha mazmuni bu yerda ko'rinadi...</p>
+                                </div>
+                            </article>
+                            @endfor
+                        </div>
+                    </section>
+                    @endforeach
+
+                    @endforelse
+
+                </div>
+                </div>{{-- end .home-feed --}}
+
+                <aside class="home-sidebar">
                     {{-- WEATHER + CURRENCY COLUMN --}}
                     <aside class="widget-column">
-
                         {{-- WEATHER WIDGET --}}
                         <div class="widget weather-widget">
                             <div class="widget__header">
@@ -213,69 +358,7 @@
                                 <p class="currency-source">Manba: CBU</p>
                             </div>
                         </div>
-
                     </aside>
-                </div>
-
-                {{-- ============================================================
-                     SECTION 2: CATEGORY NEWS (3 cols) + NEWSPAPER (1 col)
-                     ============================================================ --}}
-                <div class="mid-section">
-
-                    {{-- Category News: 3 cols --}}
-                    <div class="category-news-block">
-                        <div class="section-header">
-                            @if(isset($featuredCategory))
-                            <span class="section-badge" style="background: {{ $featuredCategory->color ?? 'var(--green-mid)' }}">
-                                <i class="fas fa-layer-group"></i> {{ $featuredCategory->name }}
-                            </span>
-                            @else
-                            <span class="section-badge">
-                                <i class="fas fa-layer-group"></i> Tanlangan Yangiliklar
-                            </span>
-                            @endif
-                        </div>
-
-                        <div class="category-news-grid">
-                            @forelse($featuredCategoryNews ?? [] as $cn)
-                            <article class="cat-news-card">
-                                <a href="{{ route('news.show', $cn->slug) }}" class="cat-news-card__img">
-                                    <img src="{{ $cn->thumbnail ? asset('storage/'.$cn->thumbnail) : asset('images/placeholder.jpg') }}"
-                                         alt="{{ $cn->title }}" loading="lazy">
-                                </a>
-                                <div class="cat-news-card__body">
-                                    <span class="cat-badge">
-                                        {{ $cn->category->name ?? 'Kategoriya' }}
-                                    </span>
-                                    <div class="cat-news-card__meta">
-                                        <span><i class="fas fa-calendar"></i> {{ $cn->created_at->format('d.m.Y') }}</span>
-                                        <span><i class="fas fa-clock"></i> {{ $cn->created_at->format('H:i') }}</span>
-                                    </div>
-                                    <h3 class="cat-news-card__title">
-                                        <a href="{{ route('news.show', $cn->slug) }}">{{ $cn->title }}</a>
-                                    </h3>
-                                    <p class="cat-news-card__excerpt">
-                                        {{ Str::limit(strip_tags($cn->body), 90) }}
-                                    </p>
-                                </div>
-                            </article>
-                            @empty
-                            @for($p = 0; $p < 8; $p++)
-                            <article class="cat-news-card cat-news-card--placeholder">
-                                <div class="cat-news-card__img placeholder-img"></div>
-                                <div class="cat-news-card__body">
-                                    <span class="cat-badge">Kategoriya</span>
-                                    <div class="cat-news-card__meta">
-                                        <span><i class="fas fa-calendar"></i> 01.01.2025</span>
-                                    </div>
-                                    <h3 class="cat-news-card__title">Yangilik sarlavhasi</h3>
-                                    <p class="cat-news-card__excerpt">Yangilik qisqacha mazmuni bu yerda ko'rinadi...</p>
-                                </div>
-                            </article>
-                            @endfor
-                            @endforelse
-                        </div>
-                    </div>
 
                     {{-- NEWSPAPER COLUMN --}}
                     <aside class="newspaper-column">
@@ -375,86 +458,7 @@
                             @endif
                         </div>
                     </aside>
-                </div>
-
-                {{-- ============================================================
-                     SECTION 3: ALL CATEGORIES NEWS — 8 news each, 4-col grid
-                     ============================================================ --}}
-                <div class="all-categories-section">
-
-                    @php
-                        $cats = $allCategoryNews ?? [];
-                    @endphp
-
-                    @forelse($cats as $catData)
-                    <section class="cat-section">
-                        <div class="cat-section__header">
-                            <h2 class="cat-section__title">
-                                <a href="{{ route('category', $catData['category']->slug ?? '#') }}">
-                                    {{ $catData['category']->name ?? 'Kategoriya' }}
-                                </a>
-                            </h2>
-                            <a href="{{ route('category', $catData['category']->slug ?? '#') }}" class="cat-section__more">
-                                Ko'proq <i class="fas fa-arrow-right"></i>
-                            </a>
-                        </div>
-
-                        <div class="cat-section__grid">
-                            @foreach($catData['news'] ?? [] as $n)
-                            <article class="grid-news-card">
-                                <a href="{{ route('news.show', $n->slug) }}" class="grid-news-card__img">
-                                    <img src="{{ $n->thumbnail ? asset('storage/'.$n->thumbnail) : asset('images/placeholder.jpg') }}"
-                                         alt="{{ $n->title }}" loading="lazy">
-                                    <span class="grid-news-card__cat-badge">{{ $n->category->name ?? '' }}</span>
-                                </a>
-                                <div class="grid-news-card__body">
-                                    <div class="grid-news-card__meta">
-                                        <span><i class="fas fa-calendar-alt"></i> {{ $n->created_at->format('d.m.Y') }}</span>
-                                        <span><i class="fas fa-clock"></i> {{ $n->created_at->format('H:i') }}</span>
-                                    </div>
-                                    <h3 class="grid-news-card__title">
-                                        <a href="{{ route('news.show', $n->slug) }}">{{ $n->title }}</a>
-                                    </h3>
-                                    <p class="grid-news-card__excerpt">
-                                        {{ Str::limit(strip_tags($n->body), 80) }}
-                                    </p>
-                                </div>
-                            </article>
-                            @endforeach
-                        </div>
-                    </section>
-                    @empty
-
-                    {{-- Static placeholder sections --}}
-                    @foreach(['Dunyo', 'Sport', 'Jamiyat', 'Madaniyat', 'Jinoyat', 'Salomatlik', 'Hi-Tech', 'Bu Qiziq'] as $staticCat)
-                    <section class="cat-section">
-                        <div class="cat-section__header">
-                            <h2 class="cat-section__title">
-                                <a href="#">{{ $staticCat }}</a>
-                            </h2>
-                            <a href="#" class="cat-section__more">Ko'proq <i class="fas fa-arrow-right"></i></a>
-                        </div>
-                        <div class="cat-section__grid">
-                            @for($k = 0; $k < 8; $k++)
-                            <article class="grid-news-card">
-                                <div class="grid-news-card__img placeholder-img"></div>
-                                <div class="grid-news-card__body">
-                                    <div class="grid-news-card__meta">
-                                        <span><i class="fas fa-calendar-alt"></i> 01.01.2025</span>
-                                        <span><i class="fas fa-clock"></i> 12:00</span>
-                                    </div>
-                                    <h3 class="grid-news-card__title"><a href="#">Yangilik sarlavhasi</a></h3>
-                                    <p class="grid-news-card__excerpt">Yangilik qisqacha mazmuni bu yerda ko'rinadi...</p>
-                                </div>
-                            </article>
-                            @endfor
-                        </div>
-                    </section>
-                    @endforeach
-
-                    @endforelse
-
-                </div>
+                </aside>
 
             </div>{{-- end .col-main --}}
 
@@ -466,15 +470,3 @@
 </div>{{-- end .home-wrapper --}}
 
 @endsection
-
-@push('scripts')
-<script>
-// Weather & Currency are loaded from zamonlive.js
-document.addEventListener('DOMContentLoaded', function() {
-    if (typeof ZamonLive !== 'undefined') {
-        ZamonLive.loadWeather();
-        ZamonLive.loadCurrency();
-    }
-});
-</script>
-@endpush

@@ -11,6 +11,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\TagController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::view('/about', 'about')->name('about');
 Route::get('/subscribe', [SubscribeController::class, 'index'])->name('subscribe');
 Route::get('lang/{lang}', [LanguageController::class, 'switch'])->name('lang.switch');
 Route::get('/search', [SearchController::class, 'index'])->name('search');

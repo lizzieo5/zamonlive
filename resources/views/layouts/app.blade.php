@@ -110,6 +110,10 @@
 
         {{-- Subscribe CTA --}}
         <div class="navbar-cta">
+            <a href="{{ route('about') }}" class="about-btn">
+                <i class="fas fa-circle-info"></i>
+                <span>Biz haqimizda</span>
+            </a>
             <a href="{{ route('subscribe') }}" class="subscribe-btn">
                 <i class="fas fa-bell"></i>
                 <span>Obuna</span>
@@ -135,15 +139,6 @@
                     {{ $cat->name }}
                 </a></li>
                 @endforeach
-                {{-- Fallback static categories --}}
-                @if(empty($navCategories))
-                <li><a href="#">Dunyo</a></li>
-                <li><a href="#">Sport</a></li>
-                <li><a href="#">Jamiyat</a></li>
-                <li><a href="#">Madaniyat</a></li>
-                <li><a href="#">Jinoyat</a></li>
-                <li><a href="#">Texnologiya</a></li>
-                @endif
             </ul>
         </div>
     </nav>
@@ -175,7 +170,7 @@
 @include('partials.footer')
 
 {{-- Scripts --}}
-<script src="{{ asset('js/zamonlive.js') }}"></script>
+@vite(['resources/css/app.css', 'resources/js/app.js'])
 @stack('scripts')
 
 </body>

@@ -188,8 +188,7 @@ const ZamonLive = (function () {
     async function loadCurrency() {
         try {
             // CBU Open API
-            const today = new Date().toISOString().slice(0,10);
-            const url   = `https://cbu.uz/uz/arkhiv-kursov-valyut/json/${today}/`;
+            const url   = `https://cbu.uz/uz/arkhiv-kursov-valyut/json/`;
             const res   = await fetch(url);
             const data  = await res.json();
 
@@ -233,6 +232,9 @@ const ZamonLive = (function () {
         initMobileMenu();
         initScrollAnimations();
         initTicker();
+        // Load external data
+        loadWeather();
+        loadCurrency();
     }
 
     document.addEventListener('DOMContentLoaded', init);
