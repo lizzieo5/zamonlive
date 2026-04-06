@@ -99,10 +99,9 @@ const ZamonLive = (function () {
     /* ---- WEATHER ---- */
     async function loadWeather() {
         // Andijon koordinatlari: 40.7828, 72.3442
-        const lat = 40.7828;
-        const lon = 72.3442;
-        // Open-Meteo: bepul, API key talab qilmaydi
-        const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m,surface_pressure,visibility&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=Asia%2FTashkent&forecast_days=5`;
+        const widget = document.getElementById('weatherWidget');
+        const url = widget?.dataset.weatherApi;
+        if (!url) return;
 
         try {
             const res  = await fetch(url);
@@ -187,8 +186,9 @@ const ZamonLive = (function () {
     /* ---- CURRENCY (CBU API) ---- */
     async function loadCurrency() {
         try {
-            // CBU Open API
-            const url   = `https://cbu.uz/uz/arkhiv-kursov-valyut/json/`;
+            const widget = document.getElementById('currencyWidget');
+            const url    = widget?.dataset.currencyApi;
+            if (!url) return;
             const res   = await fetch(url);
             const data  = await res.json();
 

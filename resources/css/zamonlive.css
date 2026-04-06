@@ -545,6 +545,7 @@ ul { list-style: none; }
     flex-direction: column;
     gap: 14px;
     align-self: flex-start;
+    margin-top: 34px;
 }
 
 /* Section Header */
@@ -1480,6 +1481,7 @@ ul { list-style: none; }
     .home-sidebar {
         width: 100%;
         flex-direction: row;
+        margin-top: 0;
     }
     .widget-column,
     .newspaper-column {

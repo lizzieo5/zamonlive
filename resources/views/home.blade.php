@@ -245,7 +245,9 @@
                                 <i class="fas fa-cloud-sun"></i>
                                 <span>Ob-havo — Andijon</span>
                             </div>
-                            <div class="weather-body" id="weatherWidget">
+                            <div class="weather-body"
+                                 id="weatherWidget"
+                                 data-weather-api="https://api.open-meteo.com/v1/forecast?latitude=40.7828&longitude=72.3442&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m,surface_pressure,visibility&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=Asia%2FTashkent&forecast_days=5">
                                 <div class="weather-main">
                                     <div class="weather-icon-big">
                                         <i class="fas fa-sun" id="weatherIcon"></i>
@@ -299,7 +301,9 @@
                                 <i class="fas fa-coins"></i>
                                 <span>Valyuta Kursi</span>
                             </div>
-                            <div class="currency-body" id="currencyWidget">
+                            <div class="currency-body"
+                                 id="currencyWidget"
+                                 data-currency-api="https://cbu.uz/uz/arkhiv-kursov-valyut/json/">
                                 <div class="currency-item">
                                     <div class="currency-flag">🇺🇸</div>
                                     <div class="currency-info">
