@@ -97,7 +97,20 @@ const ZamonLive = (function () {
     }
 
     /* ---- WEATHER ---- */
+    const WEATHER_CACHE_KEY = 'zamonlive_weather';
+    const WEATHER_CACHE_DURATION = 30 * 60 * 1000; // 30 minutes
+
     async function loadWeather() {
+        // Check cache first
+        const cached = localStorage.getItem(WEATHER_CACHE_KEY);
+        if (cached) {
+            const { data, timestamp } = JSON.parse(cached);
+            if (Date.now() - timestamp < WEATHER_CACHE_DURATION) {
+                displayWeather(data);
+                return;
+            }
+        }
+
         // Andijon koordinatlari: 40.7828, 72.3442
         const lat = 40.7828;
         const lon = 72.3442;
@@ -105,55 +118,72 @@ const ZamonLive = (function () {
         const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m,surface_pressure,visibility&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=Asia%2FTashkent&forecast_days=5`;
 
         try {
-            const res  = await fetch(url);
+            // Add timeout to prevent slow loading
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+
+            const res  = await fetch(url, { signal: controller.signal });
+            clearTimeout(timeoutId);
+
             const data = await res.json();
-            const cur  = data.current;
+            
+            // Cache the data
+            localStorage.setItem(WEATHER_CACHE_KEY, JSON.stringify({
+                data,
+                timestamp: Date.now()
+            }));
 
-            const tempEl    = document.getElementById('weatherTemp');
-            const descEl    = document.getElementById('weatherDesc');
-            const humEl     = document.getElementById('weatherHumidity');
-            const windEl    = document.getElementById('weatherWind');
-            const pressEl   = document.getElementById('weatherPressure');
-            const visEl     = document.getElementById('weatherVisibility');
-            const feelsEl   = document.getElementById('weatherFeelsLike');
-            const aqiEl     = document.getElementById('weatherAQI');
-            const iconEl    = document.getElementById('weatherIcon');
-            const forecastEl= document.getElementById('weatherForecast');
-
-            if (tempEl)   tempEl.textContent   = `${Math.round(cur.temperature_2m)}°C`;
-            if (humEl)    humEl.textContent     = `${cur.relative_humidity_2m}%`;
-            if (windEl)   windEl.textContent    = `${cur.wind_speed_10m} m/s`;
-            if (pressEl)  pressEl.textContent   = `${Math.round(cur.surface_pressure)} hPa`;
-            if (visEl)    visEl.textContent     = `${(cur.visibility/1000).toFixed(1)} km`;
-            if (feelsEl)  feelsEl.textContent   = `${Math.round(cur.apparent_temperature)}°C`;
-            if (aqiEl)    aqiEl.textContent     = getAQILabel(cur.surface_pressure);
-
-            // Weather icon and description
-            const { icon, desc } = getWeatherInfo(cur.weather_code);
-            if (iconEl)  { iconEl.className = `fas ${icon}`; }
-            if (descEl)  descEl.textContent = desc;
-
-            // 5-day forecast
-            if (forecastEl && data.daily) {
-                const uzDays = ['Yak','Dush','Sesh','Chor','Pay','Jum','Shan'];
-                forecastEl.innerHTML = '';
-                for (let i = 0; i < 5; i++) {
-                    const d    = new Date(data.daily.time[i]);
-                    const { icon: fi } = getWeatherInfo(data.daily.weather_code[i]);
-                    const maxT = Math.round(data.daily.temperature_2m_max[i]);
-                    const minT = Math.round(data.daily.temperature_2m_min[i]);
-                    forecastEl.innerHTML += `
-                        <div class="forecast-day">
-                            <span class="fd-name">${uzDays[d.getDay()]}</span>
-                            <i class="fas ${fi} fd-icon"></i>
-                            <span class="fd-temp">${maxT}°/${minT}°</span>
-                        </div>`;
-                }
-            }
+            displayWeather(data);
         } catch (err) {
             console.warn('Weather load error:', err);
             const descEl = document.getElementById('weatherDesc');
             if (descEl) descEl.textContent = 'Ma\'lumot yuklanmadi';
+        }
+    }
+
+    function displayWeather(data) {
+        const cur = data.current;
+
+        const tempEl    = document.getElementById('weatherTemp');
+        const descEl    = document.getElementById('weatherDesc');
+        const humEl     = document.getElementById('weatherHumidity');
+        const windEl    = document.getElementById('weatherWind');
+        const pressEl   = document.getElementById('weatherPressure');
+        const visEl     = document.getElementById('weatherVisibility');
+        const feelsEl   = document.getElementById('weatherFeelsLike');
+        const aqiEl     = document.getElementById('weatherAQI');
+        const iconEl    = document.getElementById('weatherIcon');
+        const forecastEl= document.getElementById('weatherForecast');
+
+        if (tempEl)   tempEl.textContent   = `${Math.round(cur.temperature_2m)}°C`;
+        if (humEl)    humEl.textContent     = `${cur.relative_humidity_2m}%`;
+        if (windEl)   windEl.textContent    = `${cur.wind_speed_10m} m/s`;
+        if (pressEl)  pressEl.textContent   = `${Math.round(cur.surface_pressure)} hPa`;
+        if (visEl)    visEl.textContent     = `${(cur.visibility/1000).toFixed(1)} km`;
+        if (feelsEl)  feelsEl.textContent   = `${Math.round(cur.apparent_temperature)}°C`;
+        if (aqiEl)    aqiEl.textContent     = getAQILabel(cur.surface_pressure);
+
+        // Weather icon and description
+        const { icon, desc } = getWeatherInfo(cur.weather_code);
+        if (iconEl)  { iconEl.className = `fas ${icon}`; }
+        if (descEl)  descEl.textContent = desc;
+
+        // 5-day forecast
+        if (forecastEl && data.daily) {
+            const uzDays = ['Yak','Dush','Sesh','Chor','Pay','Jum','Shan'];
+            forecastEl.innerHTML = '';
+            for (let i = 0; i < 5; i++) {
+                const d    = new Date(data.daily.time[i]);
+                const { icon: fi } = getWeatherInfo(data.daily.weather_code[i]);
+                const maxT = Math.round(data.daily.temperature_2m_max[i]);
+                const minT = Math.round(data.daily.temperature_2m_min[i]);
+                forecastEl.innerHTML += `
+                    <div class="forecast-day">
+                        <span class="fd-name">${uzDays[d.getDay()]}</span>
+                        <i class="fas ${fi} fd-icon"></i>
+                        <span class="fd-temp">${maxT}°/${minT}°</span>
+                    </div>`;
+            }
         }
     }
 
@@ -185,35 +215,80 @@ const ZamonLive = (function () {
     }
 
     /* ---- CURRENCY (CBU API) ---- */
+    const CURRENCY_CACHE_KEY = 'zamonlive_currency';
+    const CURRENCY_CACHE_DURATION = 60 * 60 * 1000; // 60 minutes (currencies update daily)
+
     async function loadCurrency() {
+        // Check cache first
+        const cached = localStorage.getItem(CURRENCY_CACHE_KEY);
+        if (cached) {
+            const { data, timestamp } = JSON.parse(cached);
+            if (Date.now() - timestamp < CURRENCY_CACHE_DURATION) {
+                displayCurrency(data);
+                return;
+            }
+        }
+
         try {
             // CBU Open API
             const today = new Date().toISOString().slice(0,10);
             const url   = `https://cbu.uz/uz/arkhiv-kursov-valyut/json/${today}/`;
-            const res   = await fetch(url);
+            
+            // Add timeout to prevent slow loading
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 second timeout
+
+            const res   = await fetch(url, { signal: controller.signal });
+            clearTimeout(timeoutId);
+            
             const data  = await res.json();
 
-            const codes = { USD: 'usdRate', EUR: 'eurRate', RUB: 'rubRate', GBP: 'gbpRate', CNY: 'cnyRate' };
+            // Cache data
+            localStorage.setItem(CURRENCY_CACHE_KEY, JSON.stringify({
+                data,
+                timestamp: Date.now()
+            }));
 
-            data.forEach(item => {
-                const code = item.Ccy;
-                if (codes[code]) {
-                    const el = document.getElementById(codes[code]);
-                    if (el) {
-                        const rateVal = parseFloat(item.Rate).toLocaleString('uz-UZ', { maximumFractionDigits: 2 });
-                        el.querySelector('.rate-value').textContent = rateVal + ' so\'m';
-                        const diff = parseFloat(item.Diff);
-                        const changeEl = el.querySelector('.rate-change');
-                        if (changeEl && diff !== 0) {
-                            changeEl.textContent = (diff > 0 ? '▲ +' : '▼ ') + Math.abs(diff).toFixed(2);
-                            changeEl.className   = 'rate-change ' + (diff > 0 ? 'up' : 'down');
-                        }
-                    }
-                }
-            });
+            displayCurrency(data);
         } catch (err) {
             console.warn('Currency load error:', err);
+            // Try fallback URL without date
+            try {
+                const fallbackUrl = 'https://cbu.uz/uz/arkhiv-kursov-valyut/json/';
+                const fallbackRes = await fetch(fallbackUrl);
+                const fallbackData = await fallbackRes.json();
+                
+                localStorage.setItem(CURRENCY_CACHE_KEY, JSON.stringify({
+                    data: fallbackData,
+                    timestamp: Date.now()
+                }));
+                
+                displayCurrency(fallbackData);
+            } catch (fallbackErr) {
+                console.warn('Currency fallback error:', fallbackErr);
+            }
         }
+    }
+
+    function displayCurrency(data) {
+        const codes = { USD: 'usdRate', EUR: 'eurRate', RUB: 'rubRate', GBP: 'gbpRate', CNY: 'cnyRate' };
+
+        data.forEach(item => {
+            const code = item.Ccy;
+            if (codes[code]) {
+                const el = document.getElementById(codes[code]);
+                if (el) {
+                    const rateVal = parseFloat(item.Rate).toLocaleString('uz-UZ', { maximumFractionDigits: 2 });
+                    el.querySelector('.rate-value').textContent = rateVal + ' so\'m';
+                    const diff = parseFloat(item.Diff);
+                    const changeEl = el.querySelector('.rate-change');
+                    if (changeEl && diff !== 0) {
+                        changeEl.textContent = (diff > 0 ? '▲ +' : '▼ ') + Math.abs(diff).toFixed(2);
+                        changeEl.className   = 'rate-change ' + (diff > 0 ? 'up' : 'down');
+                    }
+                }
+            }
+        });
     }
 
     /* ---- BREAKING NEWS TICKER CLONE ---- */
@@ -233,6 +308,10 @@ const ZamonLive = (function () {
         initMobileMenu();
         initScrollAnimations();
         initTicker();
+        
+        // Load external API data
+        loadWeather();
+        loadCurrency();
     }
 
     document.addEventListener('DOMContentLoaded', init);

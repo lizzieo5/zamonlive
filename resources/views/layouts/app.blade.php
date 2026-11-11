@@ -169,9 +169,9 @@
 {{-- FOOTER --}}
 @include('partials.footer')
 
-{{-- Scripts --}}
-@vite(['resources/css/app.css', 'resources/js/app.js'])
-@stack('scripts')
+ {{-- Scripts --}}
+ <script src="{{ asset('js/zamonlive.js') }}"></script>
+ @stack('scripts')
 
 </body>
 </html>

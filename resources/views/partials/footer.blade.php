@@ -79,7 +79,7 @@
                     </form>
                     <div class="footer-contact">
                         <p><i class="fas fa-envelope"></i> info@zamonlive.uz</p>
-                        <p><i class="fas fa-phone"></i> +998 XX XXX XX XX</p>
+                        <p><i class="fas fa-phone"></i> +998 93 955 77 13</p>
                         <p><i class="fas fa-map-marker-alt"></i> Toshkent, O'zbekiston</p>
                     </div>
                 </div>
